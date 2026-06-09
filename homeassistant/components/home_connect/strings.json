@@ -1160,6 +1160,41 @@
       "program_finish_time": {
         "name": "Program finish time"
       },
+      "program_phase": {
+        "name": "Program phase",
+        "state": {
+          "automaticdirtdetection": "Automatic dirt detection",
+          "automatictextiledetection": "Automatic textile detection",
+          "cleaningheatexchanger": "Cleaning heat exchanger",
+          "cupboarddryreached": "Cupboard dry reached",
+          "detectingload": "Detecting load",
+          "detectingtextile": "Detecting textile",
+          "detergentdispensing": "Detergent dispensing",
+          "drying": "Drying",
+          "emptying": "Emptying",
+          "extrarinsingfoam": "Extra rinsing (foam removal)",
+          "finalspinning": "Final spinning",
+          "fillingdetergent": "Filling detergent",
+          "finishedanticrease": "Finished (anti-crease)",
+          "fluffing": "Fluffing",
+          "guardingwrinkle": "Wrinkle guard",
+          "heating": "Heating",
+          "intermediatespin": "Intermediate spin",
+          "irondryreached": "Iron dry reached",
+          "lessironing": "Less ironing",
+          "loadadjustactive": "Load adjustment",
+          "prewash": "Pre-wash",
+          "rinsing": "Rinsing",
+          "rinsingsoftener": "Rinsing (softener)",
+          "rinsingspinning": "Rinsing and spinning",
+          "rinsingaquasensor": "Rinsing (AquaSensor)",
+          "rinsingwithaquasensor": "Rinsing (AquaSensor)",
+          "softening": "Softening",
+          "spinningfinal": "Final spin",
+          "undefined": "Undefined",
+          "washing": "Washing"
+        }
+      },
       "program_finished": {
         "name": "Program finished",
         "state": {

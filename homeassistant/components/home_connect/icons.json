@@ -146,6 +146,9 @@
       "powder_coffee_counter": {
         "default": "mdi:coffee"
       },
+      "program_phase": {
+        "default": "mdi:chart-timeline"
+      },
       "program_progress": {
         "default": "mdi:progress-clock"
       },

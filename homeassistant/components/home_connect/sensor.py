@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from datetime import timedelta
 import logging
+import time
 from typing import cast
 
 from aiohomeconnect.model import EventKey, StatusKey
@@ -46,9 +47,53 @@ class HomeConnectSensorEntityDescription(
     default_value: str | None = None
     appliance_types: tuple[str, ...] | None = None
     fetch_unit: bool = False
+    polling_required: bool = False
 
 
 BSH_PROGRAM_SENSORS = (
+    HomeConnectSensorEntityDescription(
+        key=EventKey.LAUNDRY_CARE_COMMON_OPTION_PROCESS_PHASE,
+        device_class=SensorDeviceClass.ENUM,
+        polling_required=True,
+        options=[
+            # LaundryCare.Common.EnumType.ProcessPhase.*
+            "cleaningheatexchanger",
+            "cupboarddryreached",
+            "detectingload",
+            "detectingtextile",
+            "drying",
+            "fillingdetergent",
+            "fluffing",
+            "guardingwrinkle",
+            "heating",
+            "intermediatespin",
+            "irondryreached",
+            "lessironing",
+            "prewash",
+            "rinsing",
+            "rinsingsoftener",
+            "spinningfinal",
+            "undefined",
+            "washing",
+            # LaundryCare.Washer.EnumType.ProcessPhase.*
+            "automaticdirtdetection",
+            "automatictextiledetection",
+            "detergentdispensing",
+            "emptying",
+            "extrarinsingfoam",
+            "finalspinning",
+            "loadadjustactive",
+            "rinsingspinning",
+
+            "rinsingaquasensor",
+            "rinsingwithaquasensor",
+            "softening",
+            # LaundryCare.Dryer.EnumType.ProcessPhase.*
+            "finishedanticrease",
+        ],
+        translation_key="program_phase",
+        appliance_types=("Washer", "WasherDryer", "Dryer"),
+    ),
     HomeConnectSensorEntityDescription(
         key=EventKey.BSH_COMMON_OPTION_REMAINING_PROGRAM_TIME,
         device_class=SensorDeviceClass.TIMESTAMP,
@@ -611,6 +656,32 @@ class HomeConnectProgramSensor(HomeConnectSensor):
                 EventKey.BSH_COMMON_STATUS_OPERATION_STATE,
             )
         )
+        if self.entity_description.polling_required:
+            self._last_phase_fetch: float = 0.0
+            self.async_on_remove(
+                self.coordinator.async_add_listener(
+                    self._fetch_phase_on_program_notify,
+                    EventKey.BSH_COMMON_OPTION_REMAINING_PROGRAM_TIME,
+                )
+            )
+
+    @callback
+    def _fetch_phase_on_program_notify(self) -> None:
+        """Fetch active program options, rate-limited to once per 2 minutes."""
+        if not self.program_running:
+            return
+        now = time.monotonic()
+        if now - self._last_phase_fetch < 120:
+            return
+        self._last_phase_fetch = now
+        self.hass.async_create_task(self._do_fetch_phase())
+
+    async def _do_fetch_phase(self) -> None:
+        """Fetch active program options and reset timer if phase is not yet available."""
+        await self.coordinator.async_fetch_active_program_options()
+        event = self.appliance.events.get(cast(EventKey, self.bsh_key))
+        if event is None or event.value is None:
+            self._last_phase_fetch = 0.0
 
     @callback
     def _handle_operation_state_event(self) -> None:
