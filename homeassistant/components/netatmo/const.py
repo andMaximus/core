@@ -70,6 +70,8 @@ CONF_WEATHER_AREAS = "weather_areas"
 OAUTH2_AUTHORIZE = "https://api.netatmo.com/oauth2/authorize"
 OAUTH2_TOKEN = "https://api.netatmo.com/oauth2/token"
 
+INTERNAL_SIGNAL_SCHEDULE_CHANGED = "netatmo_schedule_changed"
+
 DATA_CAMERAS = "cameras"
 DATA_DEVICE_IDS = "netatmo_device_ids"
 DATA_EVENTS = "netatmo_events"

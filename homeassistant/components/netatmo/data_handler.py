@@ -192,7 +192,7 @@ class NetatmoDataHandler:
         We do up to BATCH_SIZE calls in one update in order
         to minimize the calls on the api service.
         """
-        for data_class in islice(self._queue, 0, BATCH_SIZE * self._interval_factor):
+        for data_class in list(islice(self._queue, 0, BATCH_SIZE * self._interval_factor)):
             if data_class.next_scan > time():
                 continue
 
@@ -219,6 +219,8 @@ class NetatmoDataHandler:
     @callback
     def async_force_update(self, signal_name: str) -> None:
         """Prioritize data retrieval for given data class entry."""
+        if signal_name not in self.publisher:
+            return
         self.publisher[signal_name].next_scan = time()
         self._queue.rotate(-(self._queue.index(self.publisher[signal_name])))
 
